@@ -1,4 +1,5 @@
 ﻿use serde::{Deserialize, Serialize};
+use crate::error::AppError;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct User {
@@ -18,5 +19,19 @@ impl User {
             created_at: None,
             status: Some("active".to_string()),
         }
+    }
+
+    pub fn validate(&self) -> Result<(), AppError> {
+        Self::validate_fields(&self.username, &self.email)
+    }
+
+    pub fn validate_fields(username: &str, email: &str) -> Result<(), AppError> {
+        if username.trim().is_empty() {
+            return Err(AppError::ValidationError("Username cannot be empty".to_string()));
+        }
+        if !email.contains('@') || !email.contains('.') {
+            return Err(AppError::ValidationError(format!("Invalid email address: {}", email)));
+        }
+        Ok(())
     }
 }
