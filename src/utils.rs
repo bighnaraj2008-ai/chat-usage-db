@@ -11,3 +11,18 @@
 pub fn format_currency(amount: f64) -> String {
     format!("${:.4}", amount)
 }
+
+pub fn sanitize_email(email: &str) -> String {
+    email.trim().to_lowercase()
+}
+
+pub fn validate_username(username: &str) -> Result<String, String> {
+    let trimmed = username.trim();
+    if trimmed.is_empty() {
+        return Err("Username cannot be empty".to_string());
+    }
+    if trimmed.len() < 3 {
+        return Err("Username must be at least 3 characters".to_string());
+    }
+    Ok(trimmed.to_string())
+}
