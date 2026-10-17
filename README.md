@@ -92,3 +92,15 @@ LEFT JOIN conversations c ON c.user_id = u.id
 GROUP BY u.id
 ORDER BY conv_count DESC;
 ```
+
+## Docker Containerization
+
+You can package and execute `chat-usage-db` in a lightweight Docker container:
+
+```bash
+# Build Docker container image
+docker build -t chat-usage-db:latest .
+
+# Run containerized CLI commands
+docker run --rm -v $(pwd)/data:/data chat-usage-db --db-path /data/chat.db stats
+```
