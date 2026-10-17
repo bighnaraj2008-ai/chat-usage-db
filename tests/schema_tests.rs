@@ -49,3 +49,18 @@ fn test_foreign_key_cascade_delete() {
     let msgs_after = msg_repo.find_by_conversation_id(&conn, conv.id).unwrap();
     assert_eq!(msgs_after.len(), 0);
 }
+
+#[test]
+fn test_token_count_check_constraint() {
+    let db = setup_db();
+    let conn = db.get_conn().unwrap();
+    let user_repo = UserRepository::new();
+    let conv_repo = ConversationRepository::new();
+    let msg_repo = MessageRepository::new();
+
+    let user = user_repo.create(&conn, "token_check_user", "tokencheck@test.com").unwrap();
+    let conv = conv_repo.create(&conn, user.id, "Check Constraint", "gpt-4o").unwrap();
+
+    let result = msg_repo.create(&conn, conv.id, "user", "Negative tokens", -10);
+    assert!(result.is_err(), "Negative token count should violate CHECK constraint");
+}
