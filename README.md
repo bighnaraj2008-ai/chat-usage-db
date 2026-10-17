@@ -61,3 +61,34 @@ cargo test
 - `idx_conversations_user_id` on `conversations(user_id)`
 - `idx_messages_conversation_id` on `messages(conversation_id)`
 - `idx_users_email` on `users(email)`
+
+## Sample Analytical Queries
+
+```sql
+-- Total tokens consumed per user
+SELECT u.username, SUM(m.token_count) AS total_tokens
+FROM users u
+JOIN conversations c ON c.user_id = u.id
+JOIN messages m ON m.conversation_id = c.id
+GROUP BY u.id
+ORDER BY total_tokens DESC;
+
+-- All messages in a conversation ordered chronologically
+SELECT role, content, token_count, created_at
+FROM messages
+WHERE conversation_id = 1
+ORDER BY created_at ASC;
+
+-- Conversation statistics with message counts
+SELECT c.id, c.title, c.model_name, COUNT(m.id) AS msg_count
+FROM conversations c
+LEFT JOIN messages m ON m.conversation_id = c.id
+GROUP BY c.id;
+
+-- Users with highest active thread counts
+SELECT u.username, COUNT(c.id) AS conv_count
+FROM users u
+LEFT JOIN conversations c ON c.user_id = u.id
+GROUP BY u.id
+ORDER BY conv_count DESC;
+```
