@@ -1,0 +1,15 @@
+﻿target/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+.env
+.env.*
+.idea/
+.vscode/
+.antigravity/
+.cursor/
+.claude/
+.cargo/
+.DS_Store
+Thumbs.db
