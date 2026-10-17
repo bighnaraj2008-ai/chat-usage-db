@@ -2,6 +2,10 @@
 
 #[derive(Error, Debug)]
 pub enum AppError {
+    #[error("Database error: {0}")]
+    RusqliteError(#[from] rusqlite::Error),
+    #[error("IO error: {0}")]
+    IoError(#[from] std::io::Error),
     #[error("Migration error: {0}")]
     MigrationError(String),
     #[error("Validation error: {0}")]
