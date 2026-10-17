@@ -1,6 +1,6 @@
 ﻿use rusqlite::Connection;
 use crate::error::AppError;
-use crate::models::{Conversation, User};
+use crate::models::{Conversation, Message, User};
 
 pub struct UserRepository;
 
@@ -145,5 +145,48 @@ impl ConversationRepository {
             conversations.push(conv?);
         }
         Ok(conversations)
+    }
+}
+
+pub struct MessageRepository;
+
+impl MessageRepository {
+    pub fn new() -> Self {
+        MessageRepository
+    }
+
+    pub fn create(&self, conn: &Connection, conversation_id: i64, role: &str, content: &str, token_count: i64) -> Result<Message, AppError> {
+        conn.execute(
+            "INSERT INTO messages (conversation_id, role, content, token_count) VALUES (?1, ?2, ?3, ?4)",
+            rusqlite::params![conversation_id, role, content, token_count],
+        )?;
+        let id = conn.last_insert_rowid();
+        Ok(Message::new(
+            id,
+            conversation_id,
+            role.to_string(),
+            content.to_string(),
+            token_count,
+        ))
+    }
+
+    pub fn find_by_conversation_id(&self, conn: &Connection, conversation_id: i64) -> Result<Vec<Message>, AppError> {
+        let mut stmt = conn.prepare("SELECT id, conversation_id, role, content, token_count, created_at FROM messages WHERE conversation_id = ?1 ORDER BY id ASC")?;
+        let msg_iter = stmt.query_map(rusqlite::params![conversation_id], |row| {
+            Ok(Message {
+                id: row.get(0)?,
+                conversation_id: row.get(1)?,
+                role: row.get(2)?,
+                content: row.get(3)?,
+                token_count: row.get(4)?,
+                created_at: row.get(5)?,
+            })
+        })?;
+
+        let mut messages = Vec::new();
+        for msg in msg_iter {
+            messages.push(msg?);
+        }
+        Ok(messages)
     }
 }
