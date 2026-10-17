@@ -8,3 +8,4 @@ license = "MIT"
 
 [dependencies]
 rusqlite = { version = "0.31.0", features = ["bundled"] }
+tokio = { version = "1.38", features = ["full"] }
