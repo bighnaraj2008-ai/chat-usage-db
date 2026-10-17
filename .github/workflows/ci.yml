@@ -17,3 +17,7 @@ jobs:
         run: cargo build --verbose
       - name: Run tests
         run: cargo test --verbose
+      - name: Clippy Linter
+        run: cargo clippy -- -D warnings
+      - name: Check Formatting
+        run: cargo fmt --check
