@@ -1,5 +1,5 @@
 ﻿use chat_usage_db::db::Database;
-use chat_usage_db::db::repository::UserRepository;
+use chat_usage_db::db::repository::{ConversationRepository, MessageRepository, UserRepository};
 use chat_usage_db::services::UsageTracker;
 
 fn setup_db() -> Database {
@@ -25,4 +25,31 @@ fn test_database_lifecycle_and_seed() {
     // Verify token aggregation works on seed data
     let total = tracker.total_tokens_all(&conn).unwrap();
     assert!(total > 0);
+}
+
+#[test]
+fn test_empty_database_and_edge_cases() {
+    let db = setup_db();
+    let conn = db.get_conn().unwrap();
+    let tracker = UsageTracker::new();
+
+    // Empty db should return 0 tokens without error
+    let total = tracker.total_tokens_all(&conn).unwrap();
+    assert_eq!(total, 0);
+
+    let user_tokens = tracker.total_tokens_for_user(&conn, 9999).unwrap();
+    assert_eq!(user_tokens, 0);
+
+    let conv_tokens = tracker.total_tokens_for_conversation(&conn, 9999).unwrap();
+    assert_eq!(conv_tokens, 0);
+
+    // Message with 0 tokens is valid
+    let user_repo = UserRepository::new();
+    let conv_repo = ConversationRepository::new();
+    let msg_repo = MessageRepository::new();
+
+    let u = user_repo.create(&conn, "zero_user", "zero@example.com").unwrap();
+    let c = conv_repo.create(&conn, u.id, "Zero Tokens", "gpt-4o").unwrap();
+    let m = msg_repo.create(&conn, c.id, "user", "No tokens", 0).unwrap();
+    assert_eq!(m.token_count, 0);
 }
