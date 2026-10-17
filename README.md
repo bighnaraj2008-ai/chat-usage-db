@@ -1,5 +1,10 @@
 ﻿# chat-usage-db
 
+[![CI](https://github.com/bighnaraj2008-ai/chat-usage-db/actions/workflows/ci.yml/badge.svg)](https://github.com/bighnaraj2008-ai/chat-usage-db/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Rust: 1.70+](https://img.shields.io/badge/rust-1.70+-orange.svg)](https://www.rust-lang.org)
+[![SQLite: Bundled](https://img.shields.io/badge/sqlite-bundled-blue.svg)](https://www.sqlite.org)
+
 A production-grade SQLite database layer in Rust modeling users, conversations, messages, and token consumption.
 
 ## Architectural Overview
@@ -103,4 +108,14 @@ docker build -t chat-usage-db:latest .
 
 # Run containerized CLI commands
 docker run --rm -v $(pwd)/data:/data chat-usage-db --db-path /data/chat.db stats
+```
+
+## Testing & Verification
+
+```bash
+# Execute comprehensive integration tests
+cargo test
+
+# Run query performance benchmark harness
+cargo run --bin chat-usage-db -- stats
 ```
