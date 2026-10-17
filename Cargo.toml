@@ -1,0 +1,7 @@
+﻿[package]
+name = "chat-usage-db"
+version = "0.1.0"
+edition = "2021"
+description = "A production-grade SQLite database layer in Rust modeling users, conversations, messages, and token consumption."
+authors = ["bighnaraj2008-ai <236182883+bighnaraj2008-ai@users.noreply.github.com>"]
+license = "MIT"
