@@ -25,3 +25,8 @@ CREATE TABLE messages (
     token_count INTEGER CHECK(token_count >= 0) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Performance Indexes
+CREATE INDEX idx_conversations_user_id ON conversations(user_id);
+CREATE INDEX idx_messages_conversation_id ON messages(conversation_id);
+CREATE INDEX idx_users_email ON users(email);
