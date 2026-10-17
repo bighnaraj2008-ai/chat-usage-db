@@ -1,0 +1,28 @@
+﻿```mermaid
+erDiagram
+    users {
+        INTEGER id PK
+        TEXT username UK
+        TEXT email UK
+        DATETIME created_at
+        TEXT status
+    }
+
+    conversations {
+        INTEGER id PK
+        INTEGER user_id FK
+        TEXT title
+        TEXT model_name
+        DATETIME created_at
+        DATETIME updated_at
+    }
+
+    messages {
+        INTEGER id PK
+        INTEGER conversation_id FK
+        TEXT role
+        TEXT content
+        INTEGER token_count
+        DATETIME created_at
+    }
+```
