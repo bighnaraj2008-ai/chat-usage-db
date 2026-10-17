@@ -25,4 +25,7 @@ erDiagram
         INTEGER token_count
         DATETIME created_at
     }
+
+    users ||--o{ conversations : "has"
+    conversations ||--o{ messages : "contains"
 ```
