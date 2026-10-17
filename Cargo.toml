@@ -5,3 +5,6 @@ edition = "2021"
 description = "A production-grade SQLite database layer in Rust modeling users, conversations, messages, and token consumption."
 authors = ["bighnaraj2008-ai <236182883+bighnaraj2008-ai@users.noreply.github.com>"]
 license = "MIT"
+
+[dependencies]
+rusqlite = { version = "0.31.0", features = ["bundled"] }
