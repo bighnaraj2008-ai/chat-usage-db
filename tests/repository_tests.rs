@@ -1,5 +1,5 @@
 ﻿use chat_usage_db::db::Database;
-use chat_usage_db::db::repository::{ConversationRepository, UserRepository};
+use chat_usage_db::db::repository::{ConversationRepository, MessageRepository, UserRepository};
 
 fn setup_db() -> Database {
     Database::new(std::path::Path::new(":memory:")).expect("Failed to initialize test DB")
@@ -46,4 +46,26 @@ fn test_conversation_foreign_key_binding() {
     // Creating conversation for non-existent user should fail due to foreign key
     let invalid_conv = conv_repo.create(&conn, 99999, "Invalid", "gpt-4o");
     assert!(invalid_conv.is_err());
+}
+
+#[test]
+fn test_message_logging_and_retrieval_ordering() {
+    let db = setup_db();
+    let conn = db.get_conn().unwrap();
+    let user_repo = UserRepository::new();
+    let conv_repo = ConversationRepository::new();
+    let msg_repo = MessageRepository::new();
+
+    let user = user_repo.create(&conn, "msg_user", "msg_user@example.com").unwrap();
+    let conv = conv_repo.create(&conn, user.id, "Ordering Chat", "gpt-4o").unwrap();
+
+    let msg1 = msg_repo.create(&conn, conv.id, "user", "First message", 10).unwrap();
+    let msg2 = msg_repo.create(&conn, conv.id, "assistant", "Second message", 25).unwrap();
+    let msg3 = msg_repo.create(&conn, conv.id, "user", "Third message", 15).unwrap();
+
+    let msgs = msg_repo.find_by_conversation_id(&conn, conv.id).unwrap();
+    assert_eq!(msgs.len(), 3);
+    assert_eq!(msgs[0].id, msg1.id);
+    assert_eq!(msgs[1].id, msg2.id);
+    assert_eq!(msgs[2].id, msg3.id);
 }
